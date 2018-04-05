@@ -1,0 +1,95 @@
+[Project]
+Current Flow=Generic
+VCS=0
+version=3
+Current Config=compile
+
+[Configurations]
+compile=grbc
+
+[Library]
+GRBC=.\GRBC\GRBC.lib
+
+[Settings]
+AccessRead=0
+AccessReadWrite=0
+AccessACCB=0
+AccessACCR=0
+AccessReadWriteSLP=0
+AccessReadTopLevel=1
+DisableC=1
+ENABLE_ADV_DATAFLOW=0
+FLOW_TYPE=HDL
+LANGUAGE=VHDL
+FLOWTOOLS=NONE
+REFRESH_FLOW=1
+FAMILY=
+fileopenfolder=F:\School\2018 Spring\My_Designs\project\GRBC\src\TestBench
+
+[LocalVerilogSets]
+EnableSLP=1
+EnableDebug=0
+
+[LocalVhdlSets]
+CompileWithDebug=1
+NetlistCompilation=1
+EnableVHDL93Key=0
+EnableVHDL2002Key=1
+EnableVHDL2008Key=0
+DisableVHDL87Key=0
+Syntax RelaxLRM=0
+MaxErrorsKey=100
+OptimizationLevel=3
+DisableRangeChecks=0
+ProtectLevel=0
+IncrementalCompilation=0
+AdditionalOptions=
+
+[$LibMap$]
+GRBC=.
+Active_lib=
+
+[SpecTracer]
+WindowVisible=0
+
+[HierarchyViewer]
+HierarchyInformation=grbc_tb|testbench_for_grbc|1 
+ShowHide=ShowTopLevel
+Selected=
+
+[Groups]
+Datatypes=1
+TestBench=1
+
+[Files]
+/Mult_Tables.vhd=-1
+/Sbox_Transformation.vhd=-1
+/ReadWriteData.vhd=-1
+/KeyExpansion.vhd=-1
+/Decryption.vhd=-1
+/Encryption.vhd=-1
+/GRBC_ent.vhd=-1
+Datatypes/Byte.vhd=-1
+Datatypes/256_LUT.vhd=-1
+Datatypes/128_Stream.vhd=-1
+TestBench/aesTest_GRBC_s18.vhd=-1
+TestBench/grbc_TB.vhd=-1
+TestBench/grbc_TB_runtest.do=-1
+TestBench/Test Bench Waveform.awf=-1
+
+[Files.Data]
+.\src\Mult_Tables.vhd=VHDL Source Code
+.\src\Sbox_Transformation.vhd=VHDL Source Code
+.\src\ReadWriteData.vhd=VHDL Source Code
+.\src\KeyExpansion.vhd=VHDL Source Code
+.\src\Decryption.vhd=VHDL Source Code
+.\src\Encryption.vhd=VHDL Source Code
+.\src\GRBC_ent.vhd=VHDL Source Code
+.\src\Datatypes\Byte.vhd=VHDL Source Code
+.\src\Datatypes\256_LUT.vhd=VHDL Source Code
+.\src\Datatypes\128_Stream.vhd=VHDL Source Code
+.\src\TestBench\aesTest_GRBC_s18.vhd=VHDL Source Code
+.\src\TestBench\grbc_TB.vhd=VHDL Test Bench
+.\src\TestBench\grbc_TB_runtest.do=Macro
+.\src\TestBench\Test Bench Waveform.awf=Waveform File
+

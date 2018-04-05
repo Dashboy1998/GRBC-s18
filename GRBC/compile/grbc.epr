@@ -1,0 +1,13 @@
+"F:\School\2018 Spring\My_Designs\project\GRBC\src\Mult_Tables.vhd" VHDL grbc 0 0 0 -02
+"F:\School\2018 Spring\My_Designs\project\GRBC\src\Sbox_Transformation.vhd" VHDL grbc 0 0 0 -02
+"F:\School\2018 Spring\My_Designs\project\GRBC\src\ReadWriteData.vhd" VHDL grbc 0 0 0 -02
+"F:\School\2018 Spring\My_Designs\project\GRBC\src\KeyExpansion.vhd" VHDL grbc 0 0 0 -02
+"F:\School\2018 Spring\My_Designs\project\GRBC\src\Decryption.vhd" VHDL grbc 0 0 0 -02
+"F:\School\2018 Spring\My_Designs\project\GRBC\src\Encryption.vhd" VHDL grbc 0 0 0 -02
+"F:\School\2018 Spring\My_Designs\project\GRBC\src\GRBC_ent.vhd" VHDL grbc 0 0 0 -02
+"F:\School\2018 Spring\My_Designs\project\GRBC\src\Datatypes\Byte.vhd" VHDL grbc 1 0 0 -02
+"F:\School\2018 Spring\My_Designs\project\GRBC\src\Datatypes\128_Stream.vhd" VHDL grbc 1 0 0 -02
+"F:\School\2018 Spring\My_Designs\project\GRBC\src\Datatypes\256_LUT.vhd" VHDL grbc 1 0 0 -02
+"F:\School\2018 Spring\My_Designs\project\GRBC\src\TestBench\aesTest_GRBC_s18.vhd" VHDL grbc 0 0 0 -02
+"F:\School\2018 Spring\My_Designs\project\GRBC\src\TestBench\grbc_TB.vhd" VHDL grbc 0 0 0 -02
+. . 0 0 0

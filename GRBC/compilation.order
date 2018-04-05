@@ -1,0 +1,12 @@
+.\src\Mult_Tables.vhd
+.\src\Sbox_Transformation.vhd
+.\src\ReadWriteData.vhd
+.\src\KeyExpansion.vhd
+.\src\Decryption.vhd
+.\src\Encryption.vhd
+.\src\GRBC_ent.vhd
+.\src\Datatypes\Byte.vhd
+.\src\Datatypes\256_LUT.vhd
+.\src\Datatypes\128_Stream.vhd
+.\src\TestBench\aesTest_GRBC_s18.vhd
+.\src\TestBench\grbc_TB.vhd
