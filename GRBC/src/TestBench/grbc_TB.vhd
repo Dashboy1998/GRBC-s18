@@ -77,9 +77,9 @@ begin
 		
 		Crypt:	for i in 0 to 1 loop -- encryption/decryption loop
 			Data:	for j in 0 to 284 loop -- selects to test data
-				test_key:=tests(i).key;
-				test_PlainText:=tests(i).plain;
-				test_cipher:=tests(i).expected;
+				test_key:=tests(j).key;
+				test_PlainText:=tests(j).plain;
+				test_cipher:=tests(j).expected;
 				if(i = 0) then test_IO:= test_PlainText; else test_IO:= test_cipher; end if;
 		start<='1'; 
 		if(i=0) then ED<= '0'; else ED<= '1'; end if;

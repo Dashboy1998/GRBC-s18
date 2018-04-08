@@ -53,7 +53,7 @@ Active_lib=
 WindowVisible=0
 
 [HierarchyViewer]
-HierarchyInformation=grbc_tb|testbench_for_grbc|1      
+HierarchyInformation=grbc_tb|testbench_for_grbc|1       
 ShowHide=ShowTopLevel
 Selected=
 
