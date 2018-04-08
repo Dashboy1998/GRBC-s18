@@ -21,7 +21,7 @@ package body stream is
 				if(LU='1') then
 					outval(i,j):=D(i,j);
 				else
-					outval(3-i,j):=D(i,j);
+					outval(i,j):=D(2+i,j);
 				end if;
 			end loop col;
 		end loop row;

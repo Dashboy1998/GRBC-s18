@@ -68,7 +68,7 @@ package body KeyExpansionFunc is
 		end loop;
 		T:=rolw(T); -- Rotates T left by 1 byte
 		T:=sbox(T); -- Sbox substitution
-		T(0):=(T(0) xor rcon(R)); -- XORs the first byte with the 3rd rcon value
+		T(0):=(T(0) xor rcon(R)); -- XORs the first byte with the rcon value
 		
 		for i in 0 to 3	loop
 			for j in 0 to 3 loop -- loops to calculate the words of the expanded key

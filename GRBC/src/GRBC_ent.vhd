@@ -9,7 +9,7 @@ use work.stream.all;
 entity GRBC is
 	port(
 		-- IO should be inout however I cannot get it to work in testbench as inout
-		IO: inout Qword:=((others => (others => "ZZZZZZZZ"))); -- Used as input for plain text/cipher and key, and output of plain text/cipher
+		IO: inout Qword;--:=((others => (others => "ZZZZZZZZ"))); -- Used as input for plain text/cipher and key, and output of plain text/cipher
 		-- Change PK to DK to mean data and key
 		PK: in std_logic; -- Used to indicate if writting plain text/cihper or key
 		-- LU should be inout. Assume device plugged into uses tristate buffers for read/writing data
@@ -24,6 +24,8 @@ entity GRBC is
 end entity;	 
 
 architecture behavioral of GRBC is
+signal a: Qword:=(others=> (others => "XXXXXXXX"));
+signal b: std_logic;
 begin 
 	process
 		variable Key, Text: DQWord;
@@ -55,16 +57,23 @@ begin
 						RoundText(12-i):=invCipher(RoundText(11-i), RoundKeys(i), i);
 					end loop;
 				end if;
-				done <= '1';
-				LU <= '1';
+				
+				B <= '1';
 				
 				--Outputs the result
 				for i in 0 to 1 loop
 					wait until clk'event and clk = '1';
-					IO<= output(RoundText(12),LU);
+					done <= '1';
+					A<= output(RoundText(12),B);
+					B <= '0';
 				end loop;
+				wait until clk'event and clk = '1';
 			end if;
 		end if; 
 		wait on clk;
 	end process;
+	
+	IO<= A when (done = '1') else (others => (others => "ZZZZZZZZ"));
+	LU<= B when (done = '1') else 'Z';
+	
 end behavioral;

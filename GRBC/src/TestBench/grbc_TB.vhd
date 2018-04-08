@@ -37,11 +37,14 @@ architecture TB_ARCHITECTURE of grbc_tb is
 	signal Done : STD_LOGIC;
 	
 	-- Add your code here ...
-	signal EndSim: boolean:=false; -- Ends simulation 
-	
-	constant test_Key: std_logic_vector(127 downto 0):= tests(0).key; -- Key used in encryption
+	signal EndSim: boolean:=false; -- Ends simulation
+	signal A: Qword; -- Signal for IO
+	signal B: std_logic; -- Signal for LU
+	signal Correct: boolean;
+
+	--constant test_Key: std_logic_vector(127 downto 0):= tests(0).key; -- Key used in encryption
 	--constant test_PlainText: std_logic_vector(127 downto 0):= tests(0).plain; -- Plain Text used in encryption
-	constant test_PlainText: std_logic_vector(127 downto 0):= tests(0).expected; -- Cipher used in decryption
+	--constant test_PlainText: std_logic_vector(127 downto 0):= tests(0).expected; -- Cipher used in decryption
 begin
 	-- Unit Under Test port map
 	UUT : grbc
@@ -57,7 +60,8 @@ begin
 		);
 	
 	-- Add your stimulus here ...
-	
+	IO<= A when (done = '0') else (others => (others => "ZZZZZZZZ"));
+	LU<= B when (done = '0') else 'Z';
 	process -- Generates clock
 	begin			
 		clk<= '0';
@@ -68,44 +72,55 @@ begin
 	end process;
 	
 	process -- Process for Writting Data
+		variable test_key, test_PlainText, test_cipher, test_IO: std_logic_vector(127 downto 0);
 	begin
+		
+		Crypt:	for i in 0 to 1 loop -- encryption/decryption loop
+			Data:	for j in 0 to 284 loop -- selects to test data
+				test_key:=tests(i).key;
+				test_PlainText:=tests(i).plain;
+				test_cipher:=tests(i).expected;
+				if(i = 0) then test_IO:= test_PlainText; else test_IO:= test_cipher; end if;
 		start<='1'; 
-		ED<= '1'; -- Sets for Encryption
+		if(i=0) then ED<= '0'; else ED<= '1'; end if;
+		
 		RD<= '1'; -- Sets to read data
 		PK<= '1'; -- Loads Key
-		LU<= '0'; -- Loads lower half 
+		B<= '0'; -- Loads lower half 
 		
-		IO<= to_Qword(test_key(63 downto 0));
-		wait until clk = '1';
-		wait until clk = '0';
+		A<= to_Qword(test_key(63 downto 0)); -- loads lower half of key
+		wait until clk'event and clk='1';
 		
-		IO<= to_Qword(test_key(127 downto 64));
-		LU<= '1'; -- Loads upper half
-		wait until clk = '1';
-		wait until clk = '0';
-		PK<= '0'; -- Loads Text
-		LU<= '0'; -- Loads lower half
+		A<= to_Qword(test_key(127 downto 64)); -- loads upper half of key
+		B<= '1'; -- Sets to load upper half
+		wait until clk'event and clk='1';
+		PK<= '0'; -- Sets to load data
+		B<= '0'; -- Loads lower half
 		
-		IO<= to_Qword(test_PlainText(63 downto 0));
-		wait until clk = '1';
-		wait until clk = '0';
+		A<= to_Qword(test_IO(63 downto 0));
+		wait until clk'event and clk='1';
 		
-		IO<= to_Qword(test_PlainText(127 downto 64));
-		LU<= '1'; -- Loads upper half
-		--RD<= '0'; 
-		wait until clk = '1';
-		wait until clk = '0';
+		A<= to_Qword(test_IO(127 downto 64));
+		B<= '1'; -- Loads upper half 
+		wait until clk'event and clk='1';
 		RD<= '0';
-		wait until clk = '1';
-		wait until clk = '0';
-		wait until clk = '1';
-		wait until clk = '0';
-		wait until clk = '1';
-		wait until clk = '0';
-		wait until clk = '1';
-		wait until clk = '0';
-		wait until clk = '1';
-		wait until clk = '0';
+		wait until done'event and done = '1';
+		--- Tests the output value
+		wait until clk'event and clk = '1';
+		if(i=0) then 
+			Correct<= (IO = to_Qword(test_cipher(127 downto 64))); 
+		else 
+			Correct<= (IO = to_Qword(test_PlainText(127 downto 64)));
+		end if;
+		wait until clk'event and clk = '1';
+		if(i=0) then 
+			Correct<= (IO = to_Qword(test_cipher(63 downto 0))); 
+		else 
+			Correct<= (IO = to_Qword(test_PlainText(63 downto 0)));
+		end if;
+		wait until done'event and done = '0';
+		end loop Data;
+		end loop Crypt;
 		EndSim<= true;
 		wait;
 	end process;

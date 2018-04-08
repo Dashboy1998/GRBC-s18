@@ -1,6 +1,0 @@
-119
-~E 1 "./../src/GRBC_ent.vhd" 9 GRBC
-~A 1 "./../src/GRBC_ent.vhd" 26 behavioral
-~E 1 "./../src/TestBench/grbc_TB.vhd" 11 grbc_tb
-~A 1 "./../src/TestBench/grbc_TB.vhd" 14 TB_ARCHITECTURE
-~C 1 "./../src/TestBench/grbc_TB.vhd" 114 testbench_for_grbc
