@@ -53,7 +53,7 @@ Active_lib=
 WindowVisible=0
 
 [HierarchyViewer]
-HierarchyInformation=grbc_tb|testbench_for_grbc|1       
+HierarchyInformation=grbc_tb|testbench_for_grbc|1 
 ShowHide=ShowTopLevel
 Selected=
 
@@ -69,6 +69,8 @@ TestBench=1
 /Decryption.vhd=-1
 /Encryption.vhd=-1
 /GRBC_ent.vhd=-1
+/Behavioral.vhd=-1
+/Dataflow.vhd=-1
 Datatypes/Byte.vhd=-1
 Datatypes/128_Stream.vhd=-1
 Datatypes/256_LUT.vhd=-1
@@ -85,6 +87,8 @@ TestBench/Test Bench Waveform.awf=-1
 .\src\Decryption.vhd=VHDL Source Code
 .\src\Encryption.vhd=VHDL Source Code
 .\src\GRBC_ent.vhd=VHDL Source Code
+.\src\Behavioral.vhd=VHDL Source Code
+.\src\Dataflow.vhd=VHDL Source Code
 .\src\Datatypes\Byte.vhd=VHDL Source Code
 .\src\Datatypes\128_Stream.vhd=VHDL Source Code
 .\src\Datatypes\256_LUT.vhd=VHDL Source Code
