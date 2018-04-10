@@ -1,10 +1,15 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use work.DoubleQWord.all;
+use work.stream.all;
 
 architecture dataflow of GRBC is
 	signal count, state_main, state_key, state_r: integer:=0;
 	signal load_UK, load_LK, load_UD, load_LD: std_logic; -- Used to load data
 	signal KeyExpansion, Encryption, Decryption: std_logic; -- Used to call other state machines
+	signal Key, Data: Qword; -- Used to input full key and data
+	signal A: Qword; -- Used for tri-state buffer  
+	signal B: std_logic; -- Used for tri-state buffer
 begin
 	Main:	process(clk)
 	begin
@@ -56,4 +61,8 @@ begin
 		
 	end process KeyEx;
 	
+	
+	
+	IO<= A when (done = '1') else (others => (others => "ZZZZZZZZ"));
+	LU<= B when (done = '1') else 'Z';
 end dataflow;

@@ -16,7 +16,7 @@ architecture TB_ARCHITECTURE of grbc_tb is
 	component grbc
 		port(
 			IO : inout Qword; -- Should be inout
-			PK : in STD_LOGIC;
+			DK : in STD_LOGIC;
 			LU : inout STD_LOGIC;
 			ED : in STD_LOGIC;
 			RD : in STD_LOGIC;
@@ -26,7 +26,7 @@ architecture TB_ARCHITECTURE of grbc_tb is
 	end component;
 	
 	-- Stimulus signals - signals mapped to the input and inout ports of tested entity
-	signal PK : STD_LOGIC;
+	signal DK : STD_LOGIC;
 	signal LU : STD_LOGIC;
 	signal ED : STD_LOGIC;
 	signal RD : STD_LOGIC;
@@ -50,7 +50,7 @@ begin
 	UUT : grbc
 	port map (
 		IO => IO,
-		PK => PK,
+		DK => DK,
 		LU => LU,
 		ED => ED,
 		RD => RD,
@@ -85,7 +85,7 @@ begin
 		if(i=0) then ED<= '0'; else ED<= '1'; end if;
 		
 		RD<= '1'; -- Sets to read data
-		PK<= '1'; -- Loads Key
+		DK<= '1'; -- Loads Key
 		B<= '0'; -- Loads lower half 
 		
 		A<= to_Qword(test_key(63 downto 0)); -- loads lower half of key
@@ -94,7 +94,7 @@ begin
 		A<= to_Qword(test_key(127 downto 64)); -- loads upper half of key
 		B<= '1'; -- Sets to load upper half
 		wait until clk'event and clk='1';
-		PK<= '0'; -- Sets to load data
+		DK<= '0'; -- Sets to load data
 		B<= '0'; -- Loads lower half
 		
 		A<= to_Qword(test_IO(63 downto 0));
