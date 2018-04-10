@@ -15,7 +15,7 @@ architecture TB_ARCHITECTURE of grbc_tb is
 	-- Component declaration of the tested unit
 	component grbc
 		port(
-			IO : inout Qword; -- Should be inout
+			IO : inout Qword;
 			DK : in STD_LOGIC;
 			LU : inout STD_LOGIC;
 			ED : in STD_LOGIC;
@@ -34,7 +34,9 @@ architecture TB_ARCHITECTURE of grbc_tb is
 	signal Clk : STD_LOGIC;
 	signal IO : Qword;
 	-- Observed signals - signals mapped to the output ports of tested entity
-	signal Done : STD_LOGIC;
+	signal Done_Gold : STD_LOGIC;
+	signal Done_Dataflow : std_logic;
+	--signal 
 	
 	-- Add your code here ...
 	signal EndSim: boolean:=false; -- Ends simulation
@@ -47,7 +49,7 @@ architecture TB_ARCHITECTURE of grbc_tb is
 	--constant test_PlainText: std_logic_vector(127 downto 0):= tests(0).expected; -- Cipher used in decryption
 begin
 	-- Unit Under Test port map
-	UUT : grbc
+	UUT_Gold : grbc
 	port map (
 		IO => IO,
 		DK => DK,
@@ -56,12 +58,24 @@ begin
 		RD => RD,
 		Start => Start,
 		Clk => Clk,
-		Done => Done
+		Done => Done_Gold
 		);
+	UUT_Dataflow : grbc
+	port map (
+		IO => IO,
+		DK => DK,
+		LU => LU,
+		ED => ED,
+		RD => RD,
+		Start => Start,
+		Clk => Clk,
+		Done => Done_Dataflow
+		);
+		
 	
 	-- Add your stimulus here ...
-	IO<= A when (done = '0') else (others => (others => "ZZZZZZZZ"));
-	LU<= B when (done = '0') else 'Z';
+	IO<= A when (done_Gold = '0') else (others => (others => "ZZZZZZZZ"));
+	LU<= B when (done_Gold = '0') else 'Z';
 	process -- Generates clock
 	begin			
 		clk<= '0';
@@ -81,7 +95,7 @@ begin
 				test_PlainText:=tests(j).plain;
 				test_cipher:=tests(j).expected;
 				if(i = 0) then test_IO:= test_PlainText; else test_IO:= test_cipher; end if;
-		start<='1'; 
+		start<='0'; 
 		if(i=0) then ED<= '0'; else ED<= '1'; end if;
 		
 		RD<= '1'; -- Sets to read data
@@ -104,7 +118,8 @@ begin
 		B<= '1'; -- Loads upper half 
 		wait until clk'event and clk='1';
 		RD<= '0';
-		wait until done'event and done = '1';
+		start<='1';
+		wait until done_Gold'event and done_Gold = '1';
 		--- Tests the output value
 		wait until clk'event and clk = '1';
 		if(i=0) then 
@@ -118,7 +133,7 @@ begin
 		else 
 			Correct<= (IO = to_Qword(test_PlainText(63 downto 0)));
 		end if;
-		wait until done'event and done = '0';
+		wait until done_Gold'event and done_Gold = '0';
 		end loop Data;
 		end loop Crypt;
 		EndSim<= true;
@@ -128,8 +143,11 @@ end TB_ARCHITECTURE;
 
 configuration TESTBENCH_FOR_grbc of grbc_tb is
 	for TB_ARCHITECTURE
-		for UUT : grbc
+		for UUT_Gold : grbc
 			use entity work.grbc(behavioral);
+		end for;
+		for UUT_Dataflow : grbc
+			use entity work.grbc(dataflow);
 		end for;
 	end for;
 end TESTBENCH_FOR_grbc;
