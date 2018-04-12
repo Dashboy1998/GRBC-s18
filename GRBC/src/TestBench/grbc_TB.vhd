@@ -26,42 +26,38 @@ architecture TB_ARCHITECTURE of grbc_tb is
 	signal ED : STD_LOGIC;
 	signal Start : STD_LOGIC;
 	signal Clk : STD_LOGIC;
-	signal IO : Qword;
+	signal IO_Gold, IO_Dataflow : Qword;
 	-- Observed signals - signals mapped to the output ports of tested entity
-	signal Done_Gold : STD_LOGIC;
-	signal Done_Dataflow : std_logic;
-	--signal 
+	signal Done_Gold, Done_Dataflow : STD_LOGIC; 
 	
 	-- Add your code here ...
 	signal EndSim: boolean:=false; -- Ends simulation
-	signal A: Qword; -- Signal for IO
-	signal Correct: boolean;
+	signal IO_TB_Send: Qword; -- Signal for IO
+	signal Correct: boolean; -- Used to see if Gold model is correct
 
 begin
 	-- Unit Under Test port map
 	UUT_Gold : grbc
 	port map (
-		IO => IO,
+		IO => IO_Gold,
 		ED => ED,
 		Start => Start,
 		Clk => Clk,
 		Done => Done_Gold
 		);
---	UUT_Dataflow : grbc
---	port map (
---		IO => IO,
---		DK => DK,
---		LU => LU,
---		ED => ED,
---		RD => RD,
---		Start => Start,
---		Clk => Clk,
---		Done => Done_Dataflow
---		);
+	UUT_Dataflow : grbc
+	port map (
+		IO => IO_Dataflow,
+		ED => ED,
+		Start => Start,
+		Clk => Clk,
+		Done => Done_Dataflow
+		);
 		
 	
 	-- Add your stimulus here ...
-	IO<= A when (done_Gold = '0') else (others => (others => "ZZZZZZZZ"));
+	IO_Gold<= IO_TB_Send when (done_Gold = '0') else (others => (others => "ZZZZZZZZ"));
+	IO_Dataflow<= IO_TB_Send when (done_Dataflow = '0') else (others => (others => "ZZZZZZZZ"));
 	process -- Generates clock
 	begin			
 		clk<= '0';
@@ -83,33 +79,33 @@ begin
 		start<='1'; -- Starts 
 		if(i=0) then ED<= '0'; else ED<= '1'; end if; 
 		
-		A<= to_Qword(test_IO(127 downto 64)); -- loads upper half of data
+		IO_TB_Send<= to_Qword(test_IO(127 downto 64)); -- loads upper half of data
 		wait until clk'event and clk='1';
 		
 		start<='0'; -- Prevents the cycle from repeating
 		
-		A<= to_Qword(test_IO(63 downto 0)); -- loads lower half of data
+		IO_TB_Send<= to_Qword(test_IO(63 downto 0)); -- loads lower half of data
 		wait until clk'event and clk='1';
 		
-		A<= to_Qword(test_key(127 downto 64)); -- loads upper half of key
+		IO_TB_Send<= to_Qword(test_key(127 downto 64)); -- loads upper half of key
 		wait until clk'event and clk='1';
 		
-		A<= to_Qword(test_key(63 downto 0)); -- loads lower half of key
+		IO_TB_Send<= to_Qword(test_key(63 downto 0)); -- loads lower half of key
 		wait until clk'event and clk='1';
 		
 		wait until done_Gold'event and done_Gold = '1';
 		--- Tests the output value
 		wait until clk'event and clk = '1';
 		if(i=0) then 
-			Correct<= (IO = to_Qword(test_cipher(127 downto 64))); 
+			Correct<= (IO_Gold = to_Qword(test_cipher(127 downto 64))); 
 		else 
-			Correct<= (IO = to_Qword(test_PlainText(127 downto 64)));
+			Correct<= (IO_Gold = to_Qword(test_PlainText(127 downto 64)));
 		end if;
 		wait until clk'event and clk = '1';
 		if(i=0) then 
-			Correct<= (IO = to_Qword(test_cipher(63 downto 0))); 
+			Correct<= (IO_Gold = to_Qword(test_cipher(63 downto 0))); 
 		else 
-			Correct<= (IO = to_Qword(test_PlainText(63 downto 0)));
+			Correct<= (IO_Gold = to_Qword(test_PlainText(63 downto 0)));
 		end if;
 		wait until done_Gold'event and done_Gold = '0';
 		end loop Data;
@@ -124,9 +120,9 @@ configuration TESTBENCH_FOR_grbc of grbc_tb is
 		for UUT_Gold : grbc
 			use entity work.grbc(behavioral);
 		end for;
---		for UUT_Dataflow : grbc
---			use entity work.grbc(dataflow);
---		end for;
+		for UUT_Dataflow : grbc
+			use entity work.grbc(dataflow);
+		end for;
 	end for;
 end TESTBENCH_FOR_grbc;
 
