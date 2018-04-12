@@ -4,47 +4,27 @@ use work.DoubleQWord.all;
 use work.stream.all;
 
 architecture dataflow of GRBC is
-	signal count, state_main, state_key, state_r: integer:=0;
-	signal load_UK, load_LK, load_UD, load_LD: std_logic:='0'; -- Used to load data
+	signal count, state_main, state_data,state_key, state_r: natural:=0;
+	signal load: std_logic:='0'; -- Used to load trigger loading data
 	signal KeyExpansion, Encryption, Decryption: std_logic:='0'; -- Used to call other state machines
 	signal Key, Data: DQword; -- Used to input full key and data
-	signal A: Qword; -- Used for tri-state buffer  
-	signal B: std_logic; -- Used for tri-state buffer
+	signal A: Qword; -- Used for tri-state buffer
+	signal work: std_logic; -- Used to indicate if WIP
+	signal Keys: RoundData;
 begin
 	Main:	process(clk)
 	begin
 		if(clk = '1')  then
-			load_UK<='0';
-			load_LK<='0'; 
-			load_UD<='0'; 
-			load_LD<='0';
-			if(KeyExpansion = '0' and Encryption = '0' and Decryption = '0') then -- Checks if other states are happening
+			if(KeyExpansion = '0' and Encryption = '0' and Decryption = '0' and load = '0') then -- Checks if other states are happening
 				case state_main is
 					when 0 =>
-						if(start = '0') then
-							if(RD = '1') then -- Loads Data/key
-								if(DK = '0') then -- Loads Data
-									if(LU = '0') then -- Loads lower data
-										Data<= input(IO,'0',Data);
-									elsif(LU = '1') then -- Loads upper data
-										Data<= input(IO,'1',Data);
-									end if;
-								elsif(DK = '1') then -- Loads Key
-									if(LU = '0') then -- Loads lower key
-										Key<= input(IO,'0',Key);
-									elsif(LU = '1') then -- Loads upper key
-										Key<= input(IO,'1',Key);
-									end if;
-								end if;
-								state_main <= 0;
-							end if;
-						elsif(start = '1') then
-							state_main <= 1;
-						end if;
-					
+						if(start = '1') then
+							load<= '1'; -- Activates load_data state machine
+						else
+							state_main <= 0;
+					   	end if;
 					when 1 => -- Expands Key
 						KeyExpansion <= '1';
-					state_main <= 2;
 					when 2 =>
 						if(ED = '0') then -- Encrypts data
 							Encryption <= '1';
@@ -60,11 +40,18 @@ begin
 		end if;
 	end process Main;
 	
+	load_data:	process(clk)
+	begin
+--		if(load = '1' and clk'event) then
+--			case state_data is
+--				when 0 =>
+--					Key(
+		end process load_data;
+	
 	KeyEx:	process(clk)
 	begin
 		
 	end process KeyEx;
 	
 	IO<= A when (done = '1') else (others => (others => "ZZZZZZZZ"));
-	LU<= B when (done = '1') else 'Z';
 end dataflow;
