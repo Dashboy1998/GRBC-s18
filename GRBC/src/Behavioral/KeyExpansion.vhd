@@ -5,9 +5,10 @@ use work.DoubleQWord.all;
 use work.LUT_array.all;
 use work.byte.all;
 use work.Sbox_Transformation.all;
+use work.rcon_table.all;
+use work.word.all;
 
 package KeyExpansionFunc is
-	type word is array (0 to 3) of byte;
 	function sbox(X: Word) return word; -- Function for sbox transformation
 	function rolw(X: Word) return Word; -- Function to rotate words left
 	function rcon(X: integer) return byte; -- Function for rcon

@@ -53,24 +53,41 @@ Active_lib=
 WindowVisible=0
 
 [HierarchyViewer]
-HierarchyInformation=grbc_tb|testbench_for_grbc|1     
+HierarchyInformation=grbc_tb|testbench_for_grbc|1   
 ShowHide=ShowTopLevel
 Selected=
+
+[Folders]
+Name3=Makefiles
+Directory3=F:\Documents\School\2018 Spring\My_Designs\project\GRBC\
+Extension3=mak
+Name4=Memory
+Directory4=F:\Documents\School\2018 Spring\My_Designs\project\GRBC\
+Extension4=mem;mif;hex
+Name5=Dll Libraries
+Directory5=F:\Documents\School\2018 Spring\My_Designs\project\GRBC\
+Extension5=dll
+Name6=PDF
+Directory6=F:\Documents\School\2018 Spring\My_Designs\project\GRBC\
+Extension6=pdf
+Name7=HTML
+Directory7=F:\Documents\School\2018 Spring\My_Designs\project\GRBC\
+Extension7=htm;html
 
 [Groups]
 Datatypes=1
 TestBench=1
+Behavioral=1
+Dataflow=1
 
 [Files]
 /Mult_Tables.vhd=-1
 /Sbox_Transformation.vhd=-1
 /ReadWriteData.vhd=-1
-/KeyExpansion.vhd=-1
-/Decryption.vhd=-1
-/Encryption.vhd=-1
 /GRBC_ent.vhd=-1
-/Behavioral.vhd=-1
-/Dataflow.vhd=-1
+/Rcon_Table.vhd=-1
+/Word.vhd=-1
+Datatypes/512_LUT.vhd=-1
 Datatypes/Byte.vhd=-1
 Datatypes/128_Stream.vhd=-1
 Datatypes/256_LUT.vhd=-1
@@ -78,17 +95,22 @@ TestBench/aesTest_GRBC_s18.vhd=-1
 TestBench/grbc_TB.vhd=-1
 TestBench/grbc_TB_runtest.do=-1
 TestBench/Test Bench Waveform.awf=-1
+Behavioral/KeyExpansion.vhd=-1
+Behavioral/Decryption.vhd=-1
+Behavioral/Encryption.vhd=-1
+Behavioral/Behavioral.vhd=-1
+Dataflow/KeyStorage.vhd=-1
+Dataflow/Dataflow.vhd=-1
+Dataflow/Dataflow_KeyExpanison.vhd=-1
 
 [Files.Data]
 .\src\Mult_Tables.vhd=VHDL Source Code
 .\src\Sbox_Transformation.vhd=VHDL Source Code
 .\src\ReadWriteData.vhd=VHDL Source Code
-.\src\KeyExpansion.vhd=VHDL Source Code
-.\src\Decryption.vhd=VHDL Source Code
-.\src\Encryption.vhd=VHDL Source Code
 .\src\GRBC_ent.vhd=VHDL Source Code
-.\src\Behavioral.vhd=VHDL Source Code
-.\src\Dataflow.vhd=VHDL Source Code
+.\src\Rcon_Table.vhd=VHDL Source Code
+.\src\Word.vhd=VHDL Source Code
+.\src\Datatypes\512_LUT.vhd=VHDL Source Code
 .\src\Datatypes\Byte.vhd=VHDL Source Code
 .\src\Datatypes\128_Stream.vhd=VHDL Source Code
 .\src\Datatypes\256_LUT.vhd=VHDL Source Code
@@ -96,4 +118,11 @@ TestBench/Test Bench Waveform.awf=-1
 .\src\TestBench\grbc_TB.vhd=VHDL Test Bench
 .\src\TestBench\grbc_TB_runtest.do=Macro
 .\src\TestBench\Test Bench Waveform.awf=Waveform File
+.\src\Behavioral\KeyExpansion.vhd=VHDL Source Code
+.\src\Behavioral\Decryption.vhd=VHDL Source Code
+.\src\Behavioral\Encryption.vhd=VHDL Source Code
+.\src\Behavioral\Behavioral.vhd=VHDL Source Code
+.\src\Dataflow\KeyStorage.vhd=VHDL Source Code
+.\src\Dataflow\Dataflow.vhd=VHDL Source Code
+.\src\Dataflow\Dataflow_KeyExpanison.vhd=VHDL Source Code
 
