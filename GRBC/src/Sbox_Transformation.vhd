@@ -56,6 +56,7 @@ package Sbox_Transformation is
 	X"4C",X"D0",X"D1",X"92",X"FA",X"24",X"0B",X"0C",X"80",X"04",X"BD",X"ED",X"64",X"AD",X"42",X"FE",
 	X"78",X"82",X"90",X"AC",X"1E",X"A8",X"F9",X"C6",X"7D",X"1F",X"50",X"6B",X"DA",X"CF",X"44",X"EF",
 	X"26",X"39",X"C9",X"C2",X"E0",X"8E",X"B2",X"5E",X"3C",X"B5",X"91",X"45",X"1C",X"F2",X"D8",X"2D",
+	--Inverse
 	X"4A",X"3A",X"57",X"CA",X"D9",X"75",X"69",X"AA",X"91",X"9E",X"76",X"D6",X"D7",X"15",X"33",X"38",
 	X"5A",X"52",X"A2",X"88",X"7F",X"1E",X"23",X"31",X"26",X"BA",X"97",X"21",X"FC",X"30",X"E4",X"E9",
 	X"C8",X"6F",X"20",X"AF",X"D5",X"BD",X"F0",X"68",X"C2",X"0D",X"3E",X"24",X"79",X"FF",X"14",X"04",

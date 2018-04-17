@@ -2,25 +2,48 @@ library ieee;
 use ieee.std_logic_1164.all;
 use work.DoubleQWord.all;
 use work.stream.all;
+use work.byte.all;
 
 architecture dataflow of GRBC is
-	signal state_main, state_data,state_key, state_r: natural:=0;  
-	signal round: natural:=0;
+	signal state_main, state_data, state_key, state_e: natural:=0; --State machines  
+	
 	signal load, load_done, LU: std_logic:='0'; -- Used to load trigger loading data
-	signal ReadKey: std_logic:='0'; 
-	signal Encryption, Decryption: std_logic:='0'; -- Used to call other state machines
-	--signal KeyEx_Done: std_logic; -- Used to tell the main state machine key expanison is done (All rounds)
-	signal Data: DQWord; -- Used to input full data 
-	signal NextKey, Key: DQword; -- Used to find the next key 
-	signal A: Qword; -- Used for tri-state buffer
-	signal work: std_logic; -- Used to indicate if WIP
-	signal Key0, Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9, Key10, Key11, Key12: DQWord; -- All the keys
+	signal Key: DQword; -- Holds the entire secret Key
 	signal In_data: Qword;
+	
+	signal Key_Ex, key_done: std_logic:='0'; -- Used for Key expanison
+	signal Keys: RoundData;
+	
+	signal En_Encrypt, En_Decrypt: std_logic:='0'; -- Used to call other state machines
+	signal round: natural:=0; -- Round counter
+	signal rData: DQWord; -- AddRoundKey data
+	signal sData: DQWord; -- Sbox data
+	signal en_sbox: std_logic;
+	signal done_sbox: std_logic;
+	
+	
+	
+	signal Data: DQWord; -- Used to input full data
+	signal A: Qword; -- Used for tri-state buffer
+	
+	signal work: std_logic; -- Used to indicate if WIP
+	
 	component KeyExpansion
 		port(
 			Key: in DQWord;
-			nextKey: inout DQWord;
-			round: integer;
+			Keys: inout RoundData;
+			enable: in std_logic;	  
+			done: out std_logic;
+			clk: in std_logic
+			);
+	end component;
+	component sbox
+		port(
+			data: in DQWord;
+			sdata: out DQWord;
+			ED: in std_logic;
+			start: in std_logic;
+			done: out std_logic;
 			clk: in std_logic
 			);
 	end component;
@@ -34,30 +57,24 @@ begin
 						state_main <= 0;
 					else
 						state_main <= 1;
-						round <= 0;
+						Key_Ex<= '1'; -- Starts Key expanison
 				end if;
 				when 1 => -- Expands Key
-					round<=round + 1;
-					if(round = 12) then
-						if(ED = '0') then
-							state_main<= 2; -- Encryption
-							round<= 0;
-						else
-							state_main<= 3; -- Decryption
-						end if;
-					else
+					if(Key_done = '0') then -- Waits for Key expansion to finish
 						state_main<= 1;
+					else
+						state_main<= 2;
 				end if;
-				when 2 =>
-					if(ED = '0') then -- Encrypts data
-						Encryption <= '1';
-					elsif(ED = '1') then
-						Decryption <= '0'; -- Decrypts data
+				when 2 => -- Encryption/Decryption state
+					if(done = '0') then
+						state_main <= 2;
+					else
+						state_main <= 3;
 				end if;
-				when 3 =>
+				when 3 => --Output state
 				null; -- Outputs data
 				when others =>
-				null;
+				state_main<= 0;
 			end case;
 		end if;
 	end process Main;
@@ -90,92 +107,51 @@ begin
 					load_done <= '1';
 				state_data<= 0;
 				when others =>
-				null;
+				state_data<= 0;
 			end case;
 		end if;
-	end process load_data; 
+	end process load_data;  
 	
-	--KeyEx:	process(clk)
-	--		begin
-	--			if(clk = '1') then
-	--				case state_key is
-	--					when 0 =>
-	--						if(KeyExpansion = '1') then
-	--							Data<= input(IO, '1', Data);
-	--							state_key<= 1;
-	--						else
-	--							state_data<= 0;
-	--							load_done<= '0';
-	--					end if;
-	--					when 1 =>
-	--						Data<= input(IO, '0', Data);
-	--					state_data<= 2;
-	--					when 2 =>
-	--						Keys(0)<= input(IO, '1', Keys(0));
-	--					state_data<= 3;
-	--					when 3 =>
-	--						Keys(0)<= input(IO, '0', Keys(0));
-	--						load_done <= '1';
-	--					state_data<= 0;
-	--					when others =>
-	--					null;
-	--				end case;
-	--			end if;
-	--		end process KeyEx; 
-	
-	
-	FF:	process(clk) --Process for flip flops
+	Encryption:	process(clk)
 	begin
 		if(clk = '1') then
-			In_data<= IO;
-			if(state_data = 1 or state_data = 2) then --Implies Mux
-				Data<= input(In_data, LU, Data); -- The function input implies a Demux with LU as select
-			else 
-				Data<= data;
-			end if;
+			case state_e is
+				when 0 =>
+					round<= 0;
+					if(En_Encrypt = '0') then -- Waits
+						state_e<= 0;
+					else
+						state_e<= 1;
+				end if;
+				when 1 => -- AddRoundKey
+					state_e<= 2;
+					round <= round + 1;
+				when 2 => -- Sbox and rotate
+					if(done_sbox = '1') then
+						state_e<= 3;
+					else
+						state_e<= 2;
+				end if;
+				when 3 => -- Mix column
+				null;
+				when others =>
+				state_e<= 0;
+			end case;
 			
-			if(state_data = 3 or state_data = 4) then --Implies Mux
-				Key0<= input(In_data, LU, Key0); -- The function input implies a Demux with LU as select
-			else 
-				Key0<= Key0;
-			end if;
-			
-			if(state_main = 1) -- Mux for Key
-				case round is
-					when 1 =>
-					Key <= Key0;
-					when 2 =>
-					Key <= Key1;
-					when 3 =>
-					Key <= Key2;
-					when 4 =>
-					Key <= Key3;
-					when 5 =>	
-					Key <= Key4;
-					when 6 =>	
-					Key <= Key5;
-					when 7 =>	
-					Key <= Key6;
-					when 8 =>	
-					Key <= Key7;
-					when 9 =>	
-					Key <= Key8;
-					when 10 =>	
-					Key <= Key9;
-					when 11 =>	
-					Key <= Key10;
-					when 12 =>
-					Key <= Key11;
-					when others => null;
-					end case;	
-			end if;
-			
-					
-			
-		end if;
-	end process FF;
+		end if;	
+	end process Encryption;
 	
-KeyEx:	KeyExpansion port map(Key, nextKey, round, clk);
+	KeyEx:	KeyExpansion port map(Key, Keys, Key_Ex, Key_done, clk);
+	Data<= input(In_data, LU, Data) when ((state_data = 1 or state_data = 2) and clk'event and clk = '1') else rdata when (state_e /= 0 and clk'event and clk = '1') else Data;
+	Key<= input(In_data, LU, Key) when ((state_data = 3 or state_data = 4) and clk'event and clk = '1') else Key;
+	In_data<= IO when clk'event and clk = '1'; 
+	
+	En_Encrypt<= '1' when (state_main = 2 and ED = '0') else '0'; -- Used to start encryption state machine
+	EN_Decrypt<= '1' when (state_main = 2 and ED = '1') else '0'; -- Used to start decryption state machine
+	
+	SB:	sbox port map(rdata, sdata, ED, en_sbox, done_sbox, clk);
+	en_sbox<= '1' when (state_e<= 2) else '0'; -- Need to add condition for decryption
+	rdata<= (data xor key) when (state_e = 1) else rdata;
 	
 	load<= '1' when (state_main = 0 and start = '1') else '0'; -- Used to indicate if loading data
 	IO<= A when (done = '1') else (others => (others => "ZZZZZZZZ"));
