@@ -25,7 +25,7 @@ architecture dataflow of KeyExpansion is
 begin
 	R<= rcon_LUT(round); -- Finds the Rcon for the round
 	PrevKey<= Keys(round - 1) when round /= 0 else key;
-		
+	
 	-- Calculates T
 	T(0)<= sbox_and_Inv(to_integer(unsigned('0' & PrevKey(3,1)))) xor R;	 
 	T(1)<= sbox_and_Inv(to_integer(unsigned('0' & PrevKey(3,2))));

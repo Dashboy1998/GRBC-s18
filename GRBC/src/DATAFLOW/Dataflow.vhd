@@ -18,8 +18,11 @@ architecture dataflow of GRBC is
 	signal round: natural:=0; -- Round counter
 	signal rData: DQWord; -- AddRoundKey data
 	signal sData: DQWord; -- Sbox data
+	signal mData: DQWord; -- Mix matrix data
 	signal en_sbox: std_logic;
 	signal done_sbox: std_logic;
+	signal en_mix: std_logic;
+	signal done_mix: std_logic;
 	
 	
 	
@@ -47,6 +50,16 @@ architecture dataflow of GRBC is
 			clk: in std_logic
 			);
 	end component;
+	component MixColumn
+		port(
+			Data: in DQWord;
+			Mixed: out DQword;
+			ED: in std_logic;
+			Start: in std_logic;
+			done: out std_logic;
+			clk: in std_logic
+			);
+	end component;
 begin
 	Main:	process(clk)
 	begin
@@ -57,7 +70,6 @@ begin
 						state_main <= 0;
 					else
 						state_main <= 1;
-						Key_Ex<= '1'; -- Starts Key expanison
 				end if;
 				when 1 => -- Expands Key
 					if(Key_done = '0') then -- Waits for Key expansion to finish
@@ -124,16 +136,29 @@ begin
 						state_e<= 1;
 				end if;
 				when 1 => -- AddRoundKey
-					state_e<= 2;
-					round <= round + 1;
+					if(round /= 12) then
+						state_e<= 2;
+						round <= round + 1;
+					else -- Finished encryption
+						state_e<= 0;
+						done<= '1';
+				end if;
 				when 2 => -- Sbox and rotate
 					if(done_sbox = '1') then
-						state_e<= 3;
+						if(round /= 12) then
+							state_e<= 3;
+						else
+							state_e<= 1;
+						end if;
 					else
 						state_e<= 2;
 				end if;
 				when 3 => -- Mix column
-				null;
+					if(done_mix = '1') then
+						state_e<= 1;
+					else
+						state_e<= 3;
+				end if;
 				when others =>
 				state_e<= 0;
 			end case;
@@ -145,13 +170,17 @@ begin
 	Data<= input(In_data, LU, Data) when ((state_data = 1 or state_data = 2) and clk'event and clk = '1') else rdata when (state_e /= 0 and clk'event and clk = '1') else Data;
 	Key<= input(In_data, LU, Key) when ((state_data = 3 or state_data = 4) and clk'event and clk = '1') else Key;
 	In_data<= IO when clk'event and clk = '1'; 
+	Key_Ex<= '1' when state_main = 1 else '0'; -- Starts Key expanison
 	
 	En_Encrypt<= '1' when (state_main = 2 and ED = '0') else '0'; -- Used to start encryption state machine
 	EN_Decrypt<= '1' when (state_main = 2 and ED = '1') else '0'; -- Used to start decryption state machine
 	
 	SB:	sbox port map(rdata, sdata, ED, en_sbox, done_sbox, clk);
 	en_sbox<= '1' when (state_e<= 2) else '0'; -- Need to add condition for decryption
-	rdata<= (data xor key) when (state_e = 1) else rdata;
+	rdata<= (data xor key) when (state_e = 1 and round = 0) else (mdata xor keys(round)) when (state_e = 1 and round /= 0 and round /= 12) else (sdata xor keys(round)) when (state_e = 1 and round = 12) else rdata;
+	
+	Mix: MixColumn port map(sdata, mdata, ED, en_mix, done_mix, clk);
+	en_mix<= '1' when (state_e = 3) else '0'; -- Need to update for decryption
 	
 	load<= '1' when (state_main = 0 and start = '1') else '0'; -- Used to indicate if loading data
 	IO<= A when (done = '1') else (others => (others => "ZZZZZZZZ"));

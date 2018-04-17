@@ -4,6 +4,8 @@ use work.DoubleQWord.all;
 use work.LUT_array.all;
 
 package mult_x is
+	--type LUT_Mix is array (0 to 3) of array_256;
+	
 	--Mix Matrices
 	constant forwardMix_GRBC_S18 : DQWord := (
 	(X"03", X"04", X"01", X"07"),
