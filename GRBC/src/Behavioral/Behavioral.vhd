@@ -63,6 +63,7 @@ begin
 					wait until clk'event and clk = '1';
 					A<= output(RoundText(12),'0');
 					wait until clk'event and clk = '1';
+					work:= false;
 				end if;
 			end if;
 		end if;

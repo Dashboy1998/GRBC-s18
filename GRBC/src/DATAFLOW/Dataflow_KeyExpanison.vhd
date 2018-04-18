@@ -20,6 +20,7 @@ end KeyExpansion;
 architecture dataflow of KeyExpansion is
 	signal R: byte;
 	signal T: word;
+	signal state: natural;
 	signal PrevKey, NextKey: DQWord;
 	signal Round: natural:=0;
 begin
@@ -56,19 +57,37 @@ begin
 	nextKey(3,2)<= PrevKey(3,2) xor nextKey(2,2);
 	nextKey(3,3)<= PrevKey(3,3) xor nextKey(2,3);
 	
+	done<= '1' when (state = 3) else '0';
+	Keys(round)<= Key when (state = 1 and clk'event and clk = '1') else nextKey when (state = 2 and clk'event and clk = '1');
+	
 	process(clk)
 	begin
-		if(enable = '1' and clk = '1') then -- Calculates the next key (Would be done with XOR gates in series)
-			if(round = 0) then
-				Keys(0)<= Key;
-			else
-				Keys(round)<=NextKey;
-			end if;		 
-			if(round = 12) then
-				done<= '1';
-			else
-				round<= round + 1;
-			end if;
+		if(clk = '1') then -- Calculates the next key (Would be done with XOR gates in series)
+			case state is
+				when 0 => -- Wait state
+					if(enable = '1') then
+						state <= 1;
+					else
+						state<= 0;
+						round<= 0;
+				end if;
+				when 1 => -- Zero Expanison
+					--Keys(round)<= Key; --Sets key(0)
+					state<= 2;
+				round <= round + 1;
+				when 2 => -- Round 1 - 12
+					--Keys(round)<= nextKey;
+					if(round = 12) then
+						state<= 3;
+					else
+						round <= round + 1;
+						state<= 2;
+				end if;	
+				when 3 => -- done state
+				state <= 0;
+				when others =>
+				state <= 0;
+			end case;
 		end if;
 	end process;
 	

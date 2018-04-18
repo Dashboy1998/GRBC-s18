@@ -53,7 +53,7 @@ Active_lib=
 WindowVisible=0
 
 [HierarchyViewer]
-HierarchyInformation=grbc_tb|testbench_for_grbc|1  
+HierarchyInformation=grbc_tb|testbench_for_grbc|1 
 ShowHide=ShowTopLevel
 Selected=
 
@@ -103,7 +103,6 @@ Dataflow/dataflow_sbox.vhd=-1
 Dataflow/Dataflow_MixColumn.vhd=-1
 Dataflow/Dataflow_KeyExpanison.vhd=-1
 Dataflow/Dataflow.vhd=-1
-Dataflow/KeyStorage.vhd=-1
 
 [Files.Data]
 .\src\ReadWriteData.vhd=VHDL Source Code
@@ -128,5 +127,4 @@ Dataflow/KeyStorage.vhd=-1
 .\src\Dataflow\Dataflow_MixColumn.vhd=VHDL Source Code
 .\src\Dataflow\Dataflow_KeyExpanison.vhd=VHDL Source Code
 .\src\Dataflow\Dataflow.vhd=VHDL Source Code
-.\src\Dataflow\KeyStorage.vhd=VHDL Source Code
 

@@ -107,12 +107,19 @@ begin
 		else 
 			Correct<= (IO_Gold = to_Qword(test_PlainText(63 downto 0)));
 		end if;
-		wait until done_Gold'event and done_Gold = '0';
+		wait until done_Gold = '0';
+		if(i = 0) then --Waits for encryption of dataflow (Decryption WIP)
+		wait until done_dataflow'event and done_dataflow = '0';
+		end if;
 		end loop Data;
 		end loop Crypt;
 		EndSim<= true;
 		wait;
 	end process;
+	
+--	Gold_Check: process(done_gold, clk)
+--	begin 
+--	end process;
 end TB_ARCHITECTURE;
 
 configuration TESTBENCH_FOR_grbc of grbc_tb is

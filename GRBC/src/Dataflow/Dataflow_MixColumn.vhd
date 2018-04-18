@@ -22,19 +22,21 @@ architecture dataflow of Mixcolumn is
 signal state: natural:=0;
 	signal mcount: natural:=0;
 	signal inr0, inr1, inr2, inr3, M0j, M1j, M2j, M3j: byte;
+	signal FB: natural:=0; -- Used to select forword or reverse mix columns 
 begin
-	-- Currently for encryption only
 	-- Selects the bytes for multiplication
 	inr0<= data(mcount, 0);
 	inr1<= data(mcount, 1);
 	inr2<= data(mcount, 2);
 	inr3<= data(mcount, 3);
 	
+	FB<= 1 when ED = '1' else 0;  
+	
 	-- Calculates the answer for each column
-	M0j<= mult_3(to_integer(unsigned(inr0))) xor mult_4(to_integer(unsigned(inr1))) xor inr2 							   xor mult_7(to_integer(unsigned(inr3))); 
-	M1j<= mult_7(to_integer(unsigned(inr0))) xor mult_3(to_integer(unsigned(inr1))) xor mult_4(to_integer(unsigned(inr2))) xor inr3 							 ;
-	M2j<= inr0 								 xor mult_7(to_integer(unsigned(inr1))) xor mult_3(to_integer(unsigned(inr2))) xor mult_4(to_integer(unsigned(inr3)));
-	M3j<= mult_4(to_integer(unsigned(inr0))) xor inr1 								xor mult_7(to_integer(unsigned(inr2))) xor mult_3(to_integer(unsigned(inr3)));
+	M0j<= C00(FB) (to_integer(unsigned(inr0))) xor C01(FB) (to_integer(unsigned(inr1))) xor C02(FB) (to_integer(unsigned(inr2))) xor C03(FB) (to_integer(unsigned(inr3))); 
+	M1j<= C10(FB) (to_integer(unsigned(inr0))) xor C11(FB) (to_integer(unsigned(inr1))) xor C12(FB) (to_integer(unsigned(inr2))) xor C13(FB) (to_integer(unsigned(inr3)));
+	M2j<= C20(FB) (to_integer(unsigned(inr0))) xor C21(FB) (to_integer(unsigned(inr1))) xor C22(FB) (to_integer(unsigned(inr2))) xor C23(FB) (to_integer(unsigned(inr3)));
+	M3j<= C30(FB) (to_integer(unsigned(inr0))) xor C31(FB) (to_integer(unsigned(inr1))) xor C32(FB) (to_integer(unsigned(inr2))) xor C33(FB) (to_integer(unsigned(inr3)));
 	
 	process(clk)
 	begin

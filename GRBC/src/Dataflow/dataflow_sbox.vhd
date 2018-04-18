@@ -19,17 +19,20 @@ end entity;
 
 architecture dataflow of sbox is
 	signal state: natural:=0;
-	signal scount: natural:=0;
+	signal scount: integer range 0 to 3:=0;
 	signal inS0, inS1, inS2, inS3, S0o, S1o, S2o, S3o: byte;
 begin
-	-- Currently for encryption only
-	-- Rotates by crossing wire
+	-- Rotates by crossing wire (done with mux for rotating left (up) or right (down)
 	-- Selected the bytes for sboxxing
-	inS0<= data(scount, scount);
-	inS1<= data(scount+1, scount) when (scount /= 3) else data(0,scount);
-	inS2<= data(scount+2, scount) when (scount < 2 ) else data(scount-2,scount);
-	inS3<= data(scount+3, scount) when (scount = 0) else data(scount-1,scount);
-	
+	inS0<= data(scount, scount) when (ED = '0' or scount = 0) 
+		else data(4-scount,scount) when (ED = '1' and scount /= 0);
+	inS1<= 	data(scount+1, scount) when (scount /= 3 and ED = '0') else data(0,scount) when (ED = '0') 
+		else data(1-scount,scount) when (ED = '1' and scount < 2) else data(5-scount, scount) when (ED = '1');
+	inS2<= data(scount+2, scount) when (scount < 2 and ED = '0') else data(scount-2,scount) when (ED = '0')
+		else data(2-scount, scount) when (scount < 3 and ED = '1') else data(scount, scount) when (ED = '1');
+	inS3<= data(scount+3, scount) when (scount = 0 and ED = '0') else data(scount-1,scount) when (ED = '0')
+		else data(3-scount, scount) when (ED = '1');
+		
 	-- Sboxes selected bytess
 	S0o<= sbox_and_Inv(to_integer(unsigned(ED & inS0)));
 	S1o<= sbox_and_Inv(to_integer(unsigned(ED & inS1)));
